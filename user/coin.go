@@ -24,7 +24,7 @@ type CoinResL struct {
 }
 type CoinResLogData struct {
 	Date string `json:"his_date,omitempty"`
-	Type string `json:"his_type,omitempty"`
+	Type string `json:"his_trans_type,omitempty"`
 	Trans int `json:"his_trans_coin,omitempty"`
 	Info string `json:"trans_info,omitempty"`
 	Exp string `json:"expire_date,omitempty"`
