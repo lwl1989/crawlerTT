@@ -45,7 +45,8 @@ func GetList()  {
 
 
 func foreachSave(body io.ReadCloser) {
-
+	//b,_ := ioutil.ReadAll(body)
+	//fmt.Println(string(b[:]))
 	root, err := query.Parse(body)
 	if err != nil {
 		panic(err)
@@ -95,42 +96,43 @@ func foreachSave(body io.ReadCloser) {
 				i++
 			})
 			j++
-			go u.GetOther()
-
+			fmt.Println(u)
+			u.GetOther()
+			collection.Insert(u)
 
 			//fmt.Println(u)
 		})
 	})
-	Sum = j
-	for {
-		select{
-			case u:=<-Got:
-				collection.Insert(u)
-
-			case <-Stop:
-				fmt.Println("now exec over")
-				break
-		}
-
-	}
+	//Sum = j
+	//for {
+	//	select{
+	//		case u:=<-Got:
+	//			collection.Insert(u)
+	//
+	//		case <-Stop:
+	//			fmt.Println("now exec over")
+	//			break
+	//	}
+	//
+	//}
 	defer body.Close()
 	defer session.Close()
 }
 
 func (u *User) GetOther() {
-	//fmt.Println(u)
+	fmt.Println(u.UserId)
 	u.GetCoin()
 	u.GetUserInfo()
 	u.GetUserCoinLog()
 
-	fmt.Println(u)
-
-	Got <- u
-	NowStep += 1
-
-	if NowStep == Sum {
-		Stop <- true
-	}
+	//fmt.Println(u)
+	//
+	//Got <- u
+	//NowStep += 1
+	//
+	//if NowStep == Sum {
+	//	Stop <- true
+	//}
 }
 func (u *User) GetCoin()  {
 	coin := getCoinReq(u.UserId)

@@ -40,12 +40,11 @@ func getCoinReq(userId string) CoinResData {
 	req.ContentLength = int64(len(content))
 	setHeader(req)
 	response, err := c.Do(req)
-	defer response.Body.Close()
-
 	if err != nil {
 		fmt.Println("coin:", err.Error())
 		return CoinResData{}
 	}
+
 	body, err := ioutil.ReadAll(response.Body)
 	//fmt.Println(string(body[:]))
 	if err != nil {
@@ -71,8 +70,6 @@ func getCoinReqLog(userId string) []*CoinResLogData {
 	req.ContentLength = int64(len(content))
 	setHeader(req)
 	response, err := c.Do(req)
-	defer response.Body.Close()
-
 	if err != nil {
 		fmt.Println("coin:", err.Error())
 		return nil
