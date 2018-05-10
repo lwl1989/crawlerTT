@@ -1,0 +1,6 @@
+{
+  "mgo":"mongodb://192.168.30.100:27018",
+  "show_record":10,
+  "db":"ttpush",
+  "session_id":"gstJRzkluOQF4xlMdIbIFVVD.undefined"
+}
