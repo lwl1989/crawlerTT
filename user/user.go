@@ -113,17 +113,4 @@ func GetUserInfo(accountId string) *UserInfo {
 	})
 
 	return u
-	//root.Children(expr.Table).For(func(n *query.Node) {
-	//	fmt.Println("dasd")
-	//	fmt.Println(*n.PlainText())
-	//})
-
-	//root.Table(expr.Id("userDataEidt")).Children(expr.Tbody).For(func(n *query.Node) {
-	//	fmt.Println(*n.PlainText())
-	//	n.Children(expr.Tr).For(func(n *query.Node) {
-	//		n.Children(expr.Td).For(func(n *query.Node) {
-	//			fmt.Println(*n.PlainText())
-	//		})
-	//	})
-	//})
 }
