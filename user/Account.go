@@ -17,6 +17,35 @@ import (
 type Data struct {
 	Data []string
 }
+
+func GetShopAccount()  {
+	page := &pageForm{currentPage:1,orderType:"",orderCol:"",pageFlag:true,showRecord:OneConfig.ShowRecord}
+
+	req,err := http.NewRequest(http.MethodPost,ShopUrl,strings.NewReader(page.toString()))
+
+	if err != nil{
+		fmt.Println(err.Error())
+		return
+	}
+	c := getClient()
+
+	SetJarCook(c)
+
+	content := page.toString()
+	req.ContentLength = int64(len(content))
+	setHeader(req)
+
+
+	r, err := c.Do(req)
+
+	if err != nil{
+		fmt.Println(err.Error())
+		return
+	}
+
+	SaveAccount(r.Body,false)
+}
+
 func GetAccount()  {
 
 	page := &pageForm{currentPage:1,orderType:"",orderCol:"",pageFlag:true,showRecord:OneConfig.ShowRecord}
@@ -43,10 +72,10 @@ func GetAccount()  {
 		return
 	}
 
-	SaveAccount(r.Body)
+	SaveAccount(r.Body,true)
 }
 
-func SaveAccount(body io.ReadCloser) {
+func SaveAccount(body io.ReadCloser,admin bool) {
 
 	root, err := query.Parse(body)
 	if err != nil {
@@ -58,7 +87,12 @@ func SaveAccount(body io.ReadCloser) {
 	if err != nil {
 		panic(err)
 	}
-	collection := session.DB(OneConfig.DB).C("message_"+strconv.FormatInt(int64(time.Now().Day()),10))
+	collection := &mgo.Collection{}
+	if admin {
+		collection = session.DB(OneConfig.DB).C("account_" + strconv.FormatInt(int64(time.Now().Day()), 10))
+	}else{
+		collection = session.DB(OneConfig.DB).C("shop_" + strconv.FormatInt(int64(time.Now().Day()), 10))
+	}
 	NowStep = 0
 	j:=0
 	root.Table(expr.Id("table")).Children(expr.Tbody).For(func(n *query.Node) {
@@ -71,7 +105,7 @@ func SaveAccount(body io.ReadCloser) {
 				if i > 1 {
 					if i==2 {
 						uid := string(*n.PlainText())
-						u=getUsers(uid)
+						u=getUsers(uid,admin)
 						//fmt.Println(u)
 					}
 				}
@@ -86,11 +120,17 @@ func SaveAccount(body io.ReadCloser) {
 	defer session.Close()
 }
 
-func getUsers(accountId string) []string {
+func getUsers(accountId string,admin bool) []string {
 	content := "editAccountId=" + accountId
 	u:=make([]string,0)
 	u=append(u,accountId)
-	req, err := http.NewRequest(http.MethodPost, AdminContentUrl, strings.NewReader(content))
+	url := ""
+	if admin {
+		url = AdminContentUrl
+	}else{
+		url = ShopContentUrl
+	}
+	req, err := http.NewRequest(http.MethodPost, url, strings.NewReader(content))
 	if err != nil {
 		panic(err)
 	}
@@ -113,56 +153,35 @@ func getUsers(accountId string) []string {
 	//fmt.Println(*root.Table(expr.Id("userDataEidt")).Render())
 
 
-	root.Table(expr.Id("accountBasicDataEidt")).Children(expr.Tbody).For(func(n *query.Node) {
-		i:=0
+	root.Table().Children(expr.Tbody).For(func(n *query.Node) {
 		n.Children(expr.Tr).For(func(n *query.Node) {
 
 			n.Children(expr.Td).For(func(n *query.Node) {
-
-				switch i {
-				case 1:
-					n.Div(expr.Class("form-inline")).Children(expr.Input).For(func(n *query.Node) {
-						u=append(u,*n.Value() )
-					})
-				case 2:
-					n.Div(expr.Class("form-inline")).Children(expr.Input).For(func(n *query.Node) {
-						u=append(u,*n.Value() )
-					})
-
-				case 10:
-					fmt.Println(*n.Input(expr.Id("canUseFunctions")).Value())
-				default:
-					n.Div(expr.Class("form-inline")).Children(expr.Input).For(func(n *query.Node) {
-						u=append(u,*n.Value() )
-					})
-				}
-				i+=1
+				n.Children().For(func(n *query.Node) {
+					u=append(u,*n.Value())
+					u=append(u,*n.PlainText())
+				})
+				//switch i {
+				//case 1:
+				//	n.Div(expr.Class("form-inline")).Children(expr.Input).For(func(n *query.Node) {
+				//		u=append(u,*n.Value() )
+				//	})
+				//case 2:
+				//	n.Div(expr.Class("form-inline")).Children(expr.Input).For(func(n *query.Node) {
+				//		u=append(u,*n.Value() )
+				//	})
+				//
+				//case 10:
+				//	fmt.Println(*n.Input(expr.Id("canUseFunctions")).Value())
+				//default:
+				//	n.Div(expr.Class("form-inline")).Children(expr.Input).For(func(n *query.Node) {
+				//		u=append(u,*n.Value() )
+				//	})
+				//}
+				//i+=1
 
 			})
 		})
 	})
 	return u
-	//root.Table(expr.Id("userLogTable")).Children(expr.Tbody).For(func(n *query.Node) {
-	//	n.Children(expr.Tr).For(func(n *query.Node) {
-	//		i:=0
-	//		log := &UserModifyRecord{}
-	//		n.Children(expr.Td).For(func(n *query.Node) {
-	//			switch i {
-	//			case 1:
-	//				log.ModifyMessage = *n.PlainText()
-	//			case 2:
-	//				log.ModifyType = *n.PlainText()
-	//			case 3:
-	//				log.ModifyReason = *n.PlainText()
-	//			case 4:
-	//				log.ModifyTime = *n.PlainText()
-	//			}
-	//		})
-	//		if log.ModifyTime != "" {
-	//			u.ModifyRecord = append(u.ModifyRecord, log)
-	//		}
-	//	})
-	//})
-	//
-	//return u
 }
