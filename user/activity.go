@@ -104,34 +104,35 @@ func getActivityContent(accountId string) []string {
 
 	//fmt.Println(*root.Table(expr.Id("userDataEidt")).Render())
 
+	root.Children(expr.Table).For(func(root *query.Node) {
+		root.Table().Children(expr.Tbody).For(func(n *query.Node) {
+			n.Children(expr.Tr).For(func(n *query.Node) {
 
-	root.Table().Children(expr.Tbody).For(func(n *query.Node) {
-		n.Children(expr.Tr).For(func(n *query.Node) {
+				n.Children(expr.Td).For(func(n *query.Node) {
+					n.Children().For(func(n *query.Node) {
+						u = append(u, *n.Value())
+						u = append(u, *n.PlainText())
+					})
+					//switch i {
+					//case 1:
+					//	n.Div(expr.Class("form-inline")).Children(expr.Input).For(func(n *query.Node) {
+					//		u=append(u,*n.Value() )
+					//	})
+					//case 2:
+					//	n.Div(expr.Class("form-inline")).Children(expr.Input).For(func(n *query.Node) {
+					//		u=append(u,*n.Value() )
+					//	})
+					//
+					//case 10:
+					//	fmt.Println(*n.Input(expr.Id("canUseFunctions")).Value())
+					//default:
+					//	n.Div(expr.Class("form-inline")).Children(expr.Input).For(func(n *query.Node) {
+					//		u=append(u,*n.Value() )
+					//	})
+					//}
+					//i+=1
 
-			n.Children(expr.Td).For(func(n *query.Node) {
-				n.Children().For(func(n *query.Node) {
-					u=append(u,*n.Value())
-					u=append(u,*n.PlainText())
 				})
-				//switch i {
-				//case 1:
-				//	n.Div(expr.Class("form-inline")).Children(expr.Input).For(func(n *query.Node) {
-				//		u=append(u,*n.Value() )
-				//	})
-				//case 2:
-				//	n.Div(expr.Class("form-inline")).Children(expr.Input).For(func(n *query.Node) {
-				//		u=append(u,*n.Value() )
-				//	})
-				//
-				//case 10:
-				//	fmt.Println(*n.Input(expr.Id("canUseFunctions")).Value())
-				//default:
-				//	n.Div(expr.Class("form-inline")).Children(expr.Input).For(func(n *query.Node) {
-				//		u=append(u,*n.Value() )
-				//	})
-				//}
-				//i+=1
-
 			})
 		})
 	})

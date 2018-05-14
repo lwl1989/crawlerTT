@@ -126,16 +126,18 @@ func getMessages(messageId string) []string {
 		panic(err)
 	}
 
-	root.Table(expr.Id("accountBasicDataEidt")).Children(expr.Tbody).For(func(n *query.Node) {
-		//i:=0
-		n.Children(expr.Tr).For(func(n *query.Node) {
+	root.Children(expr.Table).For(func(root *query.Node) {
+		root.Table().Children(expr.Tbody).For(func(n *query.Node) {
+			//i:=0
+			n.Children(expr.Tr).For(func(n *query.Node) {
 
-			n.Children(expr.Td).For(func(n *query.Node) {
+				n.Children(expr.Td).For(func(n *query.Node) {
 
-				n.Div(expr.Class("form-inline")).Children(expr.Input).For(func(n *query.Node) {
-					u = append(u, *n.Value())
+					n.Div(expr.Class("form-inline")).Children(expr.Input).For(func(n *query.Node) {
+						u = append(u, *n.Value())
+					})
+
 				})
-
 			})
 		})
 	})
