@@ -18,5 +18,6 @@ func main()  {
 	user.GetMessageList()  //獲取後臺消息
 	user.GetSendMessageList()  //獲取已發送消息
 	user.GetShopAccount()  //獲取商店用戶
+	user.GetActivity()
 	//user.GetUserInfo("MkigJdpKFSkE6ZC")
 }
